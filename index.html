@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>组件练习单元</title>
+<script src="vue.js"></script>
+<link rel="stylesheet" href="animate.css">
+<style>
+*{margin: 0 auto; padding: 0 auto;}
+div{width: 440px; height: 40px; margin: 10px auto;}
+div p{width: 400px; height: 40px; color: black; font-size: 14px; text-align: center; line-height: 40px; background: wheat; float: left;}
+div input{width: 40px; height: 40px; color: black; font-size: 14px; text-align: center; line-height: 40px; background: wheat; float: left;}
+.v-enter, .v-leave-active{
+	opacity: 0
+}
+.v-enter-active, .v-leave-active{
+	transition: opacity 1s;
+}
+</style>
+</head>
+
+<body style="overflow:-Scroll; overflow-x:hidden;">
+<div id="root">
+	<quanju-zujian nums="Luo" @baolu='nameClick'></quanju-zujian>
+	
+	<jubu-zujian :names="name"></jubu-zujian>
+
+	<transition>
+		<div v-if="show"><p>{{name}}</p></div>
+	</transition>
+
+	<transition enter-active-class="animated tada" leave-active-class="animated bounceOutRight">
+		<div v-if="show"><p>{{name}}</p></div>
+	</transition>
+</div>
+
+<script>
+	//Vue.prototype.bus = new Vue();
+	Vue.component("quanjuZujian", Vue.extend({
+	props:{
+		nums: String
+	},
+	data: function(){
+		return {
+			num:this.nums
+		}
+	},
+	template:"<div><p>{{nums}}</p><input name='name' type='button' value='GO' @click='handleClick' /></div>",
+	methods: {
+		handleClick: function(){
+			this.$emit('baolu', this.num);
+			this.num="";
+		}
+	},
+	// mounted: function(){
+	// 	this.bus.$on("baolu", function(value){
+	// 		alert(value)
+	// 	})
+	// },
+}))
+
+var jubuZujian = Vue.extend({
+	props:{
+		names: String
+	},
+	template:"<div><p>{{names}}</p></div>"
+})
+
+var vm = new Vue({
+	el:"#root",
+	data: {
+		name: ' guo hua',
+		show: false
+	},
+	components:{
+		'jubu-zujian':jubuZujian
+	},
+	methods:{
+		nameClick: function(num){
+			this.name = num + this.name;
+			this.show = !this.show;
+		}
+	}
+})
+</script>
+</body>
+</html>

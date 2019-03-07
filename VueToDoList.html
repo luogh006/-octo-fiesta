@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Vue-ToDoList</title>
+<style type="text/css">
+	[v-cloak] {
+		display: none
+	}
+	table {
+		border: 1px solid #ccc;
+		padding: 0;
+		border-collapse: collapse;
+		table-layout: fixed;
+		margin-top: 10px;
+		width: 100%;
+	}
+	table td,
+	table th {
+		height: 30px;
+		border: 1px solid #ccc;
+		background: #fff;
+		font-size: 15px;
+		padding: 3px 3px 3px 8px;
+	}
+	table th:first-child {
+		width: 30px;
+	}
+	table th:last-child {
+		width: 80px;
+	}
+	.container,
+	.st {
+		width: 600px;
+		margin: 10px auto 0;
+		font-size: 13px;
+		font-family: 'Microsoft YaHei'
+	}
+	.container .search {
+		font-size: 15px;
+		padding: 4px;
+		width:300px;
+	}
+	.container .add {
+		padding: 5px 15px;
+	}
+	.overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 6;
+		background: rgba(0, 0, 0, 0.7);
+	}
+	.overlay .con {
+		position: absolute;
+		width: 420px;
+		min-height: 300px;
+		background: #fff;
+		left: 50%;
+		top: 50%;
+		-webkit-transform: translate3d(-50%, -50%, 0);
+		transform: translate3d(-50%, -50%, 0);
+		padding: 20px;
+	}
+	.active{background:#F00}
+</style>
+</head>
+
+<body>
+<header>
+  <nav class="st">
+      <h1>Vue-ToDoList</h1>
+  </nav>
+</header>
+<div class="container" id="app">
+  <div class="container">
+    <input autofocus v-model="newMsg" class="search" placeholder="请输入今日事务" @keyup.enter="addMsg">
+    <button @click="addMsg" class="add">提交</button>
+  </div>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>待做事务</th>
+            <th>操作</th>
+        </tr>
+        <tr v-cloak v-for='(msg, index) in msgs'>
+            <td>{{ msg.id+1 }}</td>
+            <td><span v-bind:class='{ active: msg.wclist}'>{{ msg.title }}</span></td>
+            <td><a href='javascript:;' v-on:click='wc(msg)'>完成</a> | <a href='javascript:;' @click='shanchu(index)'>删除</a></td>
+        </tr>
+    </table>
+</div>
+<script src="vue.min.js"></script>
+<script>
+	var STORAGE_KEY = 'vue-todolist';
+	var msgStorage = {
+		fetch: function() {
+			var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')//储存,获取
+			msgs.forEach(function(msg, index) {
+				msg.id = index;
+			})
+			msgStorage.uid = msgs.length;
+			return msgs;
+		},
+		save: function(msgs) {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs))//localstorage.setItem(name,value)存储JSON对象,JSON.stringify()转换对象利于储存
+		}
+	}
+	var app = new Vue({
+		el: '#app',
+		data: {
+			msgs: msgStorage.fetch(),//Fetch获取数据
+			newMsg: '',
+			wclist: ''
+		},
+
+		watch: {
+			msgs: {
+				handler: function(msgs) {
+					msgStorage.save(msgs);
+				},
+				deep: true
+			}
+		},
+		methods: {
+			addMsg: function() {
+				var value = this.newMsg && this.newMsg.trim()
+				if (!value) {
+					return
+				}
+				this.msgs.push({//push增加记录
+					id: msgStorage.uid++,
+					title: value,
+					wclist: false
+				})
+				this.newMsg = ''//清空INPUT
+			},
+
+			shanchu: function(index) {//清除此条记录
+				return this.msgs.splice(index,1);
+			},
+			
+			wc: function(msgs) {//是否完成记录
+			    msgs.wclist = !msgs.wclist;
+				//console.log(msgs.wclist)
+			}
+		}
+	})
+</script>
+</body>
+</html>
