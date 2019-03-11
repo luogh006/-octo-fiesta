@@ -4,18 +4,47 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Vue筛选</title>
 <script src="vue.js"></script>
+<style>
+.v-enter, .v-leave-to{opacity: 0}
+</style>
 </head>
 
 <body>
 <div id="root">
 
-
-
+	<div v-for='(item, index) of arr' :key="index">{{item.objectCode}}</div>
+	<div>{{str}}</div>
 </div>
 <script>
-	var vm = new.Vue({
-		el:'#root'
-	})
+var vm = new Vue({
+	el:'#root',
+	data:{
+		list:[
+				{"objectCode":"string1"},
+				{"objectCode":"string2"},
+				{"objectCode":"string3"},
+				{"objectCode":"string4"},
+				{"objectCode":"string4"},
+				{"objectCode":"string4"},
+				{"objectCode":"string5"}
+			],
+		arr:[],
+		str: ''
+	},
+	mounted: function(){
+		var list = this.list;
+		var len = list.length;
+		var init = {};
+		for(let index in list){
+			if(!init[list[index].objectCode]){
+				init[list[index].objectCode] = "a";
+				this.arr.push(list[index])
+			}
+		}
+		this.str = JSON.stringify(this.arr);
+	},
+
+})
 </script>
 </body>
 </html>
